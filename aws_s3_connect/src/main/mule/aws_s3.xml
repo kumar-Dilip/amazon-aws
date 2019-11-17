@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+    xmlns:http="http://www.mulesoft.org/schema/mule/http"
+    xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+    <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d1a047e2-6246-4ae6-9df6-3e1079502d00" >
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <flow name="awsreFlow" doc:id="4cd9f344-6987-4b0d-8b9c-421c04762c68" >
+        <http:listener doc:name="Listener" doc:id="736b0b1a-3041-4802-a368-ebd936b84656" config-ref="HTTP_Listener_config" path="/bucket"/>
+        <s3:create-bucket doc:name="Create bucket" doc:id="7d183f3a-8018-4690-a51f-101ccd8ba5f6" bucketName="${config.bucket}" config-ref="Amazon_S3_Configuration1"/>
+		<set-payload value="#['bucket is created']" doc:name="Set Payload" doc:id="bc683655-cec9-41f8-8ac6-7649cbbb9cd0" />
+    
+</flow>
+	<flow name="aws_s3Flow" doc:id="554e1d9d-44de-42eb-b3c0-4dc57da95cf7" >
+		<http:listener doc:name="Listener" doc:id="c9afcdaa-118e-4c40-8821-4290b70fc6b8" config-ref="HTTP_Listener_config" path="/object"/>
+		<s3:create-object doc:name="Create object" doc:id="3bf3b968-33c5-4b1c-a673-7777e6842cf5" config-ref="Amazon_S3_Configuration1" bucketName="${config.bucket}" key="JsonText3"/>
+		<set-payload value="#['object is created']" doc:name="Set Payload" doc:id="9bb356b1-178e-40ad-87d8-2c4f7935079e" />
+	</flow>
+	<flow name="aws_s3Flow1" doc:id="a12679ad-4393-419d-868f-58df1d48581e" >
+		<http:listener doc:name="Listener" doc:id="d28062be-ba6d-4525-9165-a48d38b6c41e" config-ref="HTTP_Listener_config" path="/getobject"/>
+		<s3:get-object doc:name="Get object" doc:id="0a8ab1a6-eb84-4684-8768-2eef147ee34b" config-ref="Amazon_S3_Configuration1" bucketName="myfirstbucket-dilip" key="JsonText2"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="e2923a92-ac1b-4c08-b13c-9feb1a982e28" />
+	</flow>
+
+</mule>
